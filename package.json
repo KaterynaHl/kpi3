@@ -1,0 +1,28 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "RESTful API для мікроблогінгу, який дозволяє створювати, читати, оновлювати та видаляти пости, коментарі, а також взаємодіяти з іншими користувачами в системі.",
+  "homepage": "https://github.com/KaterynaHl/kpi3#readme",
+  "bugs": {
+    "url": "https://github.com/KaterynaHl/kpi3/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KaterynaHl/kpi3.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+  "start": "node src/server.js",
+  "dev": "nodemon src/server.js"
+  },
+  "keywords": [],
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
