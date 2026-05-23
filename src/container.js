@@ -2,6 +2,7 @@ const { store } = require("./infrastructure/database/store");
 
 const InMemoryUserRepository = require("./infrastructure/repositories/InMemoryUserRepository");
 const InMemoryPostRepository = require("./infrastructure/repositories/InMemoryPostRepository");
+const InMemoryPostReadRepository = require("./infrastructure/repositories/InMemoryPostReadRepository");
 
 const PasswordHasher = require("./infrastructure/PasswordHasher");
 const TokenService = require("./infrastructure/TokenService");
@@ -9,15 +10,18 @@ const TokenService = require("./infrastructure/TokenService");
 const UserFactory = require("./domain/factories/UserFactory");
 const PostFactory = require("./domain/factories/PostFactory");
 
-const RegisterUserUseCase = require("./application/use-cases/RegisterUserUseCase");
-const LoginUserUseCase = require("./application/use-cases/LoginUserUseCase");
-const CreatePostUseCase = require("./application/use-cases/CreatePostUseCase");
-const GetPostsUseCase = require("./application/use-cases/GetPostsUseCase");
-const AddCommentUseCase = require("./application/use-cases/AddCommentUseCase");
-const LikePostUseCase = require("./application/use-cases/LikePostUseCase");
+const RegisterUserCommandHandler = require("./application/command-handlers/RegisterUserCommandHandler");
+const LoginUserCommandHandler = require("./application/command-handlers/LoginUserCommandHandler");
+const CreatePostCommandHandler = require("./application/command-handlers/CreatePostCommandHandler");
+const AddCommentCommandHandler = require("./application/command-handlers/AddCommentCommandHandler");
+const LikePostCommandHandler = require("./application/command-handlers/LikePostCommandHandler");
+
+const GetPostsQueryHandler = require("./application/query-handlers/GetPostsQueryHandler");
+const GetPostByIdQueryHandler = require("./application/query-handlers/GetPostByIdQueryHandler");
 
 const userRepository = new InMemoryUserRepository(store);
 const postRepository = new InMemoryPostRepository(store);
+const postReadRepository = new InMemoryPostReadRepository(store);
 
 const passwordHasher = new PasswordHasher();
 const tokenService = new TokenService();
@@ -28,15 +32,27 @@ const postFactory = new PostFactory();
 module.exports = {
   tokenService,
 
-  registerUserUseCase: new RegisterUserUseCase(userFactory, userRepository),
-  loginUserUseCase: new LoginUserUseCase(
+  registerUserCommandHandler: new RegisterUserCommandHandler(
+    userFactory,
+    userRepository
+  ),
+
+  loginUserCommandHandler: new LoginUserCommandHandler(
     userRepository,
     passwordHasher,
     tokenService
   ),
 
-  createPostUseCase: new CreatePostUseCase(postFactory, postRepository),
-  getPostsUseCase: new GetPostsUseCase(postRepository),
-  addCommentUseCase: new AddCommentUseCase(postRepository),
-  likePostUseCase: new LikePostUseCase(postRepository),
+  createPostCommandHandler: new CreatePostCommandHandler(
+    postFactory,
+    postRepository
+  ),
+
+  addCommentCommandHandler: new AddCommentCommandHandler(postRepository),
+
+  likePostCommandHandler: new LikePostCommandHandler(postRepository),
+
+  getPostsQueryHandler: new GetPostsQueryHandler(postReadRepository),
+
+  getPostByIdQueryHandler: new GetPostByIdQueryHandler(postReadRepository),
 };
