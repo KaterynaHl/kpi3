@@ -49,3 +49,9 @@ const {
     authMiddleware,
     likePost
   );
+
+  const errorMiddleware = require(
+    "./middleware/error.middleware"
+  );
+  
+  app.use(errorMiddleware);
