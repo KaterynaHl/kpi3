@@ -1,6 +1,6 @@
-const Post = require("../../src/domain/entities/Post");
-const PostContent = require("../../src/domain/value-objects/PostContent");
-const CommentContent = require("../../src/domain/value-objects/CommentContent");
+const Post = require("../../src/modules/core/domain/entities/Post");
+const PostContent = require("../../src/modules/core/domain/value-objects/PostContent");
+const CommentContent = require("../../src/modules/core/domain/value-objects/CommentContent");
 
 describe("Post domain entity", () => {
   test("author can update post", () => {
