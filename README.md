@@ -115,113 +115,61 @@ curl -X POST http://localhost:3000/posts \
 ## Структура проєкту
 
 ```txt
-src/
-├── application/
-│   ├── dto/
-│   │   ├── AddCommentDTO.js
-│   │   ├── CreatePostDTO.js
-│   │   ├── LoginUserDTO.js
-│   │   └── RegisterUserDTO.js
-│   │
-│   └── use-cases/
-│       ├── AddCommentUseCase.js
-│       ├── CreatePostUseCase.js
-│       ├── GetPostsUseCase.js
-│       ├── LikePostUseCase.js
-│       ├── LoginUserUseCase.js
-│       └── RegisterUserUseCase.js
-│
-├── domain/
-│   ├── entities/
-│   │   ├── Comment.js
-│   │   ├── Post.js
-│   │   └── User.js
-│   │
-│   ├── errors/
-│   │   ├── DomainError.js
-│   │   └── NotFoundError.js
-│   │
-│   ├── factories/
-│   │   ├── PostFactory.js
-│   │   └── UserFactory.js
-│   │
-│   ├── repositories/
-│   │   ├── PostRepository.js
-│   │   └── UserRepository.js
-│   │
-│   └── value-objects/
-│       ├── CommentContent.js
-│       ├── Email.js
-│       ├── PostContent.js
-│       └── Username.js
-│
-├── infrastructure/
-│   ├── database/
-│   │   └── store.js
-│   │
-│   ├── repositories/
-│   │   ├── InMemoryPostRepository.js
-│   │   └── InMemoryUserRepository.js
-│   │
-│   ├── PasswordHasher.js
-│   └── TokenService.js
-│
-├── presentation/
-│   ├── controllers/
-│   │   ├── AuthController.js
-│   │   └── PostController.js
-│   │
-│   ├── middleware/
-│   │   ├── authMiddleware.js
-│   │   └── errorMiddleware.js
-│   │
-│   └── routes/
-│       ├── authRoutes.js
-│       └── postRoutes.js
-│
-├── app.js
-├── container.js
-└── server.js
-
-docs/
-├── adr/
-│   └── 001-rich-domain-model.md
-│
-├── analysis/
-│   └── lab2.md
-│
-├── self-analysis.md
-└── use-cases.md
-
-tests/
-├── application/
-│   └── CreatePostUseCase.test.js
-│
-├── domain/
-│   ├── post.test.js
-│   └── value-objects.test.js
-│
-└── api.test.js
-
-README.md
-package.json
-package-lock.json
-.gitignore
+    src/
+    application/
+        commands/
+        command-handlers/
+        queries/
+        query-handlers/
+        read-models/
+        repositories/
+    domain/
+    infrastructure/
+    presentation/
+    app.js
+    container.js
+    server.js
+    docs/
+    analysis/
+        lab2.md
+        lab3.md
+    adr/
+    tests/
+    application/
+    domain/
+    api.test.js
 ```
 
 ## Що реалізовано для лабораторної
 
-- REST API з коректними HTTP-методами.
-- Статуси `200`, `201`, `204`, `400`, `401`, `403`, `404`, `409`.
-- Реєстрація та логін через JWT.
-- Захист CRUD endpoints.
-- CRUD для постів.
-- CRUD для коментарів.
-- Перегляд і редагування профілю.
-- Пошук користувачів.
-- Пошук постів за тегом.
-- Лайк/дизлайк поста.
-- Unit-тести для валідації.
-- Integration-тести для HTTP endpoints.
-- Use cases у `docs/use-cases.md`.
-- Самоаналіз у `docs/self-analysis.md`.
+### Commands
+
+Commands змінюють стан системи:
+
+- `RegisterUserCommand`
+- `LoginUserCommand`
+- `CreatePostCommand`
+- `AddCommentCommand`
+- `LikePostCommand`
+
+Їх обробляють Command Handlers:
+
+- `RegisterUserCommandHandler`
+- `LoginUserCommandHandler`
+- `CreatePostCommandHandler`
+- `AddCommentCommandHandler`
+- `LikePostCommandHandler`
+
+### Queries
+
+Queries не змінюють стан системи:
+
+- `GetPostsQuery`
+- `GetPostByIdQuery`
+
+Їх обробляють Query Handlers:
+
+- `GetPostsQueryHandler`
+- `GetPostByIdQueryHandler`
+
+Queries повертають Read Models, а не доменні моделі.
