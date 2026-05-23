@@ -11,6 +11,12 @@ app.get("/", (req, res) => {
   });
 });
 
-app.post("/auth/register", register);
+const {
+    register,
+    login,
+  } = require("./auth/auth.controller");
+  
+  app.post("/auth/register", register);
+  app.post("/auth/login", login);
 
 module.exports = app;
