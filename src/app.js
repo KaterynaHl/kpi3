@@ -33,3 +33,13 @@ const {
   app.get("/posts", getPosts);
   app.get("/posts/:id", getPostById);
   app.delete("/posts/:id", authMiddleware, deletePost);
+
+  const {
+    createComment,
+  } = require("./comments/comments.controller");
+  
+  app.post(
+    "/posts/:id/comments",
+    authMiddleware,
+    createComment
+  );
