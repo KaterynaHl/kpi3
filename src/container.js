@@ -6,6 +6,10 @@ const InMemoryPostReadRepository = require("./infrastructure/repositories/InMemo
 
 const PasswordHasher = require("./infrastructure/PasswordHasher");
 const TokenService = require("./infrastructure/TokenService");
+const ConsoleNotificationService = require("./infrastructure/notifications/ConsoleNotificationService");
+
+const InProcessEventBus = require("./infrastructure/events/InProcessEventBus");
+const PostCreatedNotificationHandler = require("./infrastructure/events/PostCreatedNotificationHandler");
 
 const UserFactory = require("./domain/factories/UserFactory");
 const PostFactory = require("./domain/factories/PostFactory");
@@ -22,9 +26,12 @@ const GetPostByIdQueryHandler = require("./application/query-handlers/GetPostByI
 const userRepository = new InMemoryUserRepository(store);
 const postRepository = new InMemoryPostRepository(store);
 const postReadRepository = new InMemoryPostReadRepository(store);
-
 const passwordHasher = new PasswordHasher();
 const tokenService = new TokenService();
+const notificationService = new ConsoleNotificationService();
+const eventBus = new InProcessEventBus();
+
+eventBus.subscribe("PostCreated", new PostCreatedNotificationHandler(notificationService));
 
 const userFactory = new UserFactory(userRepository, passwordHasher);
 const postFactory = new PostFactory();
@@ -45,7 +52,9 @@ module.exports = {
 
   createPostCommandHandler: new CreatePostCommandHandler(
     postFactory,
-    postRepository
+    postRepository,
+    notificationService,
+    eventBus
   ),
 
   addCommentCommandHandler: new AddCommentCommandHandler(postRepository),
