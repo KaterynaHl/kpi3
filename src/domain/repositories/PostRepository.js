@@ -1,17 +1,17 @@
 class PostRepository {
-    save(post) {
+    async save(post) {
       throw new Error("Not implemented");
     }
   
-    findById(id) {
+    async findById(id) {
       throw new Error("Not implemented");
     }
   
-    findAll() {
+    async findAll() {
       throw new Error("Not implemented");
     }
   
-    delete(id) {
+    async delete(id) {
       throw new Error("Not implemented");
     }
   }

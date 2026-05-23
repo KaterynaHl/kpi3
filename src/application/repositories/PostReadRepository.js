@@ -1,11 +1,11 @@
 class PostReadRepository {
-    findAll(query) {
+    async findAll(query) {
       throw new Error("Not implemented");
     }
   
-    findById(postId) {
+    async findById(postId) {
       throw new Error("Not implemented");
     }
   }
   
-  module.exports = PostReadRepository;
+  module.exports = PostReadRepository; 
