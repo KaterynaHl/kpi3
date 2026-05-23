@@ -1,5 +1,6 @@
 const express = require("express");
 const { register } = require("./auth/auth.controller");
+const authMiddleware = require("./auth/auth.middleware");
 
 const app = express();
 
@@ -20,3 +21,15 @@ const {
   app.post("/auth/login", login);
 
 module.exports = app;
+
+const {
+    createPost,
+    getPosts,
+    getPostById,
+    deletePost,
+  } = require("./posts/posts.controller");
+  
+  app.post("/posts", authMiddleware, createPost);
+  app.get("/posts", getPosts);
+  app.get("/posts/:id", getPostById);
+  app.delete("/posts/:id", authMiddleware, deletePost);
