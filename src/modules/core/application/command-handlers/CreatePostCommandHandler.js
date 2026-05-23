@@ -1,10 +1,10 @@
 const PostCreatedEvent = require("../../domain/events/PostCreatedEvent");
 
 class CreatePostCommandHandler {
-  constructor(postFactory, notificationService, postRepository, eventBus = null) {
+  constructor(postFactory, postRepository, notificationService, eventBus = null) {
     this.postFactory = postFactory;
-    this.notificationService = notificationService;
     this.postRepository = postRepository;
+    this.notificationService = notificationService;
     this.eventBus = eventBus;
   }
 
@@ -31,7 +31,9 @@ class CreatePostCommandHandler {
       );
     }
 
-    return { postId: post.id };
+    return {
+      postId: post.id,
+    };
   }
 }
 

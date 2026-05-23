@@ -2,9 +2,9 @@ const express = require("express");
 
 const { coreModule, analyticsModule } = require("./container");
 
-const createAuthRoutes = require("./modules/core/presentation/routes/authRoutes");
-const createPostRoutes = require("./modules/core/presentation/routes/postRoutes");
-const createAnalyticsRoutes = require("./modules/analytics/api/analyticsRoutes");
+const createAuthRoutes = require("./src/presentation/routes/authRoutes"); 
+const createPostRoutes = require("./src/presentation/routes/postRoutes");
+const createAnalyticsRoutes = require("./src/modules/analytics/api/analyticsRoutes");
 
 const errorMiddleware = require("./modules/core/presentation/middleware/errorMiddleware");
 
