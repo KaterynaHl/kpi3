@@ -31,145 +31,192 @@ http://localhost:3000
 npm test
 ```
 
-## Основні інваріанти
+## Lab 4: Component Interaction and Integration Events
 
-- `email` має бути валідним.
-- `username` має містити 3–30 символів: літери, цифри або `_`.
-- `password` має містити мінімум 6 символів.
-- `email` і `username` мають бути унікальними.
-- Пост не може бути порожнім.
-- Пост не може бути довшим за 280 символів.
-- Коментар не може бути порожнім.
-- Коментар не може бути довшим за 200 символів.
-- Редагувати й видаляти пост може тільки його автор.
-- Редагувати й видаляти коментар може тільки його автор.
-- Реакція на пост може бути тільки `like` або `dislike`.
-- Неавторизовані запити до захищених endpoints повертають `401 Unauthorized`.
+У лабораторній роботі №4 до архітектури було додано міжкомпонентну комунікацію, synchronous/asynchronous interaction та integration events.
 
-## API endpoints
+### Auxiliary Component
 
-### Auth
+Було додано окремий Notification Component, який відповідає за side effects після бізнес-операцій.
 
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| POST | `/auth/register` | Реєстрація | No |
-| POST | `/auth/login` | Вхід | No |
+Файл:
 
-### Users
+```txt
+src/infrastructure/notifications/ConsoleNotificationService.js
+```
 
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| GET | `/users/me` | Перегляд власного профілю | Yes |
-| PATCH | `/users/me` | Оновлення власного профілю | Yes |
-| DELETE | `/users/me` | Видалення власного акаунта | Yes |
-| GET | `/users/search?q=ann` | Пошук користувача | Yes |
+Notification component має чіткий контракт:
+
+```txt
+src/domain/notifications/NotificationService.js
+```
+
+---
+
+## Synchronous Communication
+
+Після створення поста `CreatePostCommandHandler` синхронно викликає:
+
+```js
+await notificationService.send(...)
+```
+
+Це означає, що основна бізнес-операція очікує завершення notification component.
+
+### Переваги:
+- проста реалізація;
+- легше тестування;
+- простіший debugging.
+
+### Недоліки:
+- більший response time;
+- сильніше coupling;
+- side effect може вплинути на основну операцію.
+
+---
+
+## Asynchronous Communication
+
+Для асинхронної взаємодії реалізовано in-process Event Bus.
+
+### Event Bus
+
+```txt
+src/shared/event-bus/EventBus.js
+src/infrastructure/events/InProcessEventBus.js
+```
+
+### Integration Event
+
+Після створення поста публікується immutable integration event:
+
+```txt
+src/domain/events/PostCreatedEvent.js
+```
+
+Event:
+- immutable (`Object.freeze`)
+- використовує past tense naming (`PostCreated`)
+- містить достатньо context data
+
+### Event Publishing
+
+```js
+await eventBus.publish(
+  new PostCreatedEvent(...)
+)
+```
+
+### Event Subscription
+
+Notification component підписується на подію:
+
+```js
+eventBus.subscribe(
+  "PostCreated",
+  new PostCreatedNotificationHandler(...)
+)
+```
+
+---
+
+## Architecture after Lab 4
+
+```txt
+src/
+├── application/
+│   ├── commands/
+│   ├── command-handlers/
+│   ├── queries/
+│   ├── query-handlers/
+│   ├── read-models/
+│   └── repositories/
+│
+├── domain/
+│   ├── entities/
+│   ├── events/
+│   ├── notifications/
+│   ├── repositories/
+│   └── value-objects/
+│
+├── infrastructure/
+│   ├── database/
+│   ├── events/
+│   ├── notifications/
+│   └── repositories/
+│
+├── presentation/
+│
+├── shared/
+│   └── event-bus/
+│
+├── app.js
+├── container.js
+├── server.js
+├── tests/
+└── docs/
+```
+
+---
+
+## Tests
+
+### Unit Tests
+- Command handlers
+- Domain invariants
+- Sync communication
+- EventBus behavior
+
+### Integration Tests
+- HTTP endpoints
+- Query handlers
+- Read models
+- Authentication flow
+
+## Main API Endpoints
+
+### Authentication
+
+```txt
+POST /auth/register
+POST /auth/login
+```
 
 ### Posts
 
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| POST | `/posts` | Створення поста | Yes |
-| GET | `/posts` | Список постів | Yes |
-| GET | `/posts?tag=js` | Пошук постів за тегом | Yes |
-| GET | `/posts/:id` | Отримання одного поста | Yes |
-| PATCH | `/posts/:id` | Оновлення власного поста | Yes |
-| DELETE | `/posts/:id` | Видалення власного поста | Yes |
-| POST | `/posts/:id/reactions` | Лайк/дизлайк поста | Yes |
-
-### Comments
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| POST | `/posts/:id/comments` | Додати коментар | Yes |
-| GET | `/posts/:id/comments` | Переглянути коментарі поста | Yes |
-| PATCH | `/comments/:id` | Оновити власний коментар | Yes |
-| DELETE | `/comments/:id` | Видалити власний коментар | Yes |
-
-## Приклад використання
-
-### Реєстрація
-
-```bash
-curl -X POST http://localhost:3000/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"student","email":"student@example.com","password":"123456"}'
-```
-
-### Логін
-
-```bash
-curl -X POST http://localhost:3000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"student","password":"123456"}'
-```
-
-### Створення поста
-
-```bash
-curl -X POST http://localhost:3000/posts \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"content":"Hello microblog!","tags":["intro","lab1"]}'
-```
-
-## Структура проєкту
-
 ```txt
-    src/
-    application/
-        commands/
-        command-handlers/
-        queries/
-        query-handlers/
-        read-models/
-        repositories/
-    domain/
-    infrastructure/
-    presentation/
-    app.js
-    container.js
-    server.js
-    docs/
-    analysis/
-        lab2.md
-        lab3.md
-    adr/
-    tests/
-    application/
-    domain/
-    api.test.js
+GET /posts
+GET /posts/:id
+
+POST /posts
+POST /posts/:id/comments
+POST /posts/:id/like
 ```
 
-## Що реалізовано для лабораторної
+## Architecture Evolution
 
-### Commands
+### Lab 1
+- CRUD REST API
+- Authentication
+- Validation
+- Integration and unit tests
 
-Commands змінюють стан системи:
+### Lab 2
+- Clean Architecture
+- Domain Layer
+- Repository Pattern
+- Dependency Injection
 
-- `RegisterUserCommand`
-- `LoginUserCommand`
-- `CreatePostCommand`
-- `AddCommentCommand`
-- `LikePostCommand`
+### Lab 3
+- CQS (Command Query Separation)
+- Command Handlers
+- Query Handlers
+- Read Models
 
-Їх обробляють Command Handlers:
-
-- `RegisterUserCommandHandler`
-- `LoginUserCommandHandler`
-- `CreatePostCommandHandler`
-- `AddCommentCommandHandler`
-- `LikePostCommandHandler`
-
-### Queries
-
-Queries не змінюють стан системи:
-
-- `GetPostsQuery`
-- `GetPostByIdQuery`
-
-Їх обробляють Query Handlers:
-
-- `GetPostsQueryHandler`
-- `GetPostByIdQueryHandler`
-
-Queries повертають Read Models, а не доменні моделі.
+### Lab 4
+- Component Interaction
+- Synchronous communication
+- Asynchronous communication
+- Integration Events
+- Event Bus
+- Notification Component

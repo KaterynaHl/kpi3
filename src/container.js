@@ -23,9 +23,6 @@ const LikePostCommandHandler = require("./application/command-handlers/LikePostC
 const GetPostsQueryHandler = require("./application/query-handlers/GetPostsQueryHandler");
 const GetPostByIdQueryHandler = require("./application/query-handlers/GetPostByIdQueryHandler");
 
-const InProcessEventBus = require("./infrastructure/events/InProcessEventBus");
-const PostCreatedNotificationHandler = require("./infrastructure/events/PostCreatedNotificationHandler");
-
 const userRepository = new InMemoryUserRepository(store);
 const postRepository = new InMemoryPostRepository(store);
 const postReadRepository = new InMemoryPostReadRepository(store);

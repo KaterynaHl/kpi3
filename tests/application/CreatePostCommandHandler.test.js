@@ -13,11 +13,39 @@ class FakePostRepository {
   }
 }
 
+class FakeNotificationService {
+  constructor() {
+    this.notifications = [];
+  }
+
+  async send(notification) {
+    this.notifications.push(notification);
+  }
+}
+
+class FakeEventBus {
+  constructor() {
+    this.events = [];
+  }
+
+  async publish(event) {
+    this.events.push(event);
+  }
+}
+
 describe("CreatePostCommandHandler", () => {
   test("should create post and return only id", async () => {
     const repository = new FakePostRepository();
+    const notificationService = new FakeNotificationService();
+    const eventBus = new FakeEventBus();
     const factory = new PostFactory();
-    const handler = new CreatePostCommandHandler(factory, repository);
+
+    const handler = new CreatePostCommandHandler(
+      factory,
+      repository,
+      notificationService,
+      eventBus
+    );
 
     const command = new CreatePostCommand({
       authorId: "user-1",
@@ -28,12 +56,22 @@ describe("CreatePostCommandHandler", () => {
 
     expect(typeof result).toBe("string");
     expect(repository.posts.length).toBe(1);
+    expect(notificationService.notifications.length).toBe(1);
+    expect(eventBus.events.length).toBe(1);
   });
 
   test("should throw domain error for invalid content", async () => {
     const repository = new FakePostRepository();
+    const notificationService = new FakeNotificationService();
+    const eventBus = new FakeEventBus();
     const factory = new PostFactory();
-    const handler = new CreatePostCommandHandler(factory, repository);
+
+    const handler = new CreatePostCommandHandler(
+      factory,
+      repository,
+      notificationService,
+      eventBus
+    );
 
     const command = new CreatePostCommand({
       authorId: "user-1",
