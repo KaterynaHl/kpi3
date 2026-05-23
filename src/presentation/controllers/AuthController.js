@@ -1,21 +1,19 @@
-const RegisterUserDTO = require("../../application/dto/RegisterUserDTO");
-const LoginUserDTO = require("../../application/dto/LoginUserDTO");
+const RegisterUserCommand = require("../../application/commands/RegisterUserCommand");
+const LoginUserCommand = require("../../application/commands/LoginUserCommand");
 
 const {
-  registerUserUseCase,
-  loginUserUseCase,
+  registerUserCommandHandler,
+  loginUserCommandHandler,
 } = require("../../container");
 
 const register = async (req, res, next) => {
   try {
-    const dto = new RegisterUserDTO(req.body);
+    const command = new RegisterUserCommand(req.body);
 
-    const user = await registerUserUseCase.execute(dto);
+    const userId = await registerUserCommandHandler.handle(command);
 
     res.status(201).json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
+      id: userId,
     });
   } catch (error) {
     next(error);
@@ -24,9 +22,9 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const dto = new LoginUserDTO(req.body);
+    const command = new LoginUserCommand(req.body);
 
-    const token = await loginUserUseCase.execute(dto);
+    const token = await loginUserCommandHandler.handle(command);
 
     res.json({
       token,

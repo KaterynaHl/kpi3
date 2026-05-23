@@ -1,36 +1,30 @@
-const CreatePostDTO = require("../../application/dto/CreatePostDTO");
-const AddCommentDTO = require("../../application/dto/AddCommentDTO");
+const CreatePostCommand = require("../../application/commands/CreatePostCommand");
+const AddCommentCommand = require("../../application/commands/AddCommentCommand");
+const LikePostCommand = require("../../application/commands/LikePostCommand");
+
+const GetPostsQuery = require("../../application/queries/GetPostsQuery");
+const GetPostByIdQuery = require("../../application/queries/GetPostByIdQuery");
 
 const {
-  createPostUseCase,
-  getPostsUseCase,
-  addCommentUseCase,
-  likePostUseCase,
+  createPostCommandHandler,
+  addCommentCommandHandler,
+  likePostCommandHandler,
+  getPostsQueryHandler,
+  getPostByIdQueryHandler,
 } = require("../../container");
-
-const mapPostResponse = (post) => ({
-  id: post.id,
-  authorId: post.authorId,
-  content: post.content,
-  likesCount: post.likesCount,
-  comments: post.comments.map((comment) => ({
-    id: comment.id,
-    postId: comment.postId,
-    authorId: comment.authorId,
-    content: comment.content,
-  })),
-});
 
 const createPost = async (req, res, next) => {
   try {
-    const dto = new CreatePostDTO({
+    const command = new CreatePostCommand({
       authorId: req.user.id,
       content: req.body.content,
     });
 
-    const post = await createPostUseCase.execute(dto);
+    const postId = await createPostCommandHandler.handle(command);
 
-    res.status(201).json(mapPostResponse(post));
+    res.status(201).json({
+      id: postId,
+    });
   } catch (error) {
     next(error);
   }
@@ -38,9 +32,28 @@ const createPost = async (req, res, next) => {
 
 const getPosts = async (req, res, next) => {
   try {
-    const posts = await getPostsUseCase.execute();
+    const query = new GetPostsQuery({
+      limit: req.query.limit,
+      offset: req.query.offset,
+    });
 
-    res.json(posts.map(mapPostResponse));
+    const posts = await getPostsQueryHandler.handle(query);
+
+    res.json(posts);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getPostById = async (req, res, next) => {
+  try {
+    const query = new GetPostByIdQuery({
+      postId: req.params.id,
+    });
+
+    const post = await getPostByIdQueryHandler.handle(query);
+
+    res.json(post);
   } catch (error) {
     next(error);
   }
@@ -48,19 +61,16 @@ const getPosts = async (req, res, next) => {
 
 const addComment = async (req, res, next) => {
   try {
-    const dto = new AddCommentDTO({
+    const command = new AddCommentCommand({
       postId: req.params.id,
       authorId: req.user.id,
       content: req.body.content,
     });
 
-    const comment = await addCommentUseCase.execute(dto);
+    const commentId = await addCommentCommandHandler.handle(command);
 
     res.status(201).json({
-      id: comment.id,
-      postId: comment.postId,
-      authorId: comment.authorId,
-      content: comment.content,
+      id: commentId,
     });
   } catch (error) {
     next(error);
@@ -69,12 +79,14 @@ const addComment = async (req, res, next) => {
 
 const likePost = async (req, res, next) => {
   try {
-    const post = await likePostUseCase.execute({
+    const command = new LikePostCommand({
       postId: req.params.id,
       userId: req.user.id,
     });
 
-    res.json(mapPostResponse(post));
+    await likePostCommandHandler.handle(command);
+
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -83,6 +95,7 @@ const likePost = async (req, res, next) => {
 module.exports = {
   createPost,
   getPosts,
+  getPostById,
   addComment,
   likePost,
 };
