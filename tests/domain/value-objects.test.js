@@ -1,5 +1,5 @@
-const Email = require("../../src/domain/value-objects/Email");
-const PostContent = require("../../src/domain/value-objects/PostContent");
+const Email = require("../../src/modules/core/domain/value-objects/Email");
+const PostContent = require("../../src/modules/core/domain/value-objects/PostContent");
 
 describe("Value Objects", () => {
   test("should create valid email", () => {

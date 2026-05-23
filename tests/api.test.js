@@ -1,13 +1,17 @@
 const request = require("supertest");
+
 const app = require("../src/app");
-const { resetStore } = require("../src/infrastructure/database/store");
+const { resetStore } = require("../src/modules/core/infrastructure/database/store");
 
 beforeEach(() => {
   resetStore();
 });
 
-describe("CQS Microblog API", () => {
-  test("command creates post and query returns read model", async () => {
+const waitForAsyncHandlers = () =>
+  new Promise((resolve) => setImmediate(resolve));
+
+describe("Modular Monolith Microblog API", () => {
+  test("core creates post and analytics eventually updates summary", async () => {
     await request(app).post("/auth/register").send({
       username: "katya",
       email: "katya@test.com",
@@ -25,21 +29,19 @@ describe("CQS Microblog API", () => {
       .post("/posts")
       .set("Authorization", `Bearer ${token}`)
       .send({
-        content: "My first CQS post",
+        content: "My first modular monolith post",
       })
       .expect(201);
 
     expect(createResponse.body.id).toBeDefined();
 
-    const postsResponse = await request(app)
-      .get("/posts")
+    await waitForAsyncHandlers();
+
+    const analyticsResponse = await request(app)
+      .get("/analytics/summary")
       .expect(200);
 
-    expect(postsResponse.body.length).toBe(1);
-    expect(postsResponse.body[0]).toHaveProperty("id");
-    expect(postsResponse.body[0]).toHaveProperty("content");
-    expect(postsResponse.body[0]).toHaveProperty("likesCount");
-    expect(postsResponse.body[0]).toHaveProperty("comments");
+    expect(analyticsResponse.body.totalPosts).toBe(1);
   });
 
   test("query should not require authorization", async () => {

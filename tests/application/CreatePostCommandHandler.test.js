@@ -1,6 +1,6 @@
-const CreatePostCommand = require("../../src/application/commands/CreatePostCommand");
-const CreatePostCommandHandler = require("../../src/application/command-handlers/CreatePostCommandHandler");
-const PostFactory = require("../../src/domain/factories/PostFactory");
+const CreatePostCommand = require("../../src/modules/core/application/commands/CreatePostCommand");
+const CreatePostCommandHandler = require("../../src/modules/core/application/command-handlers/CreatePostCommandHandler");
+const PostFactory = require("../../src/modules/core/domain/factories/PostFactory");
 
 class FakePostRepository {
   constructor() {
@@ -28,7 +28,7 @@ class FakeEventBus {
     this.events = [];
   }
 
-  async publish(event) {
+  publish(event) {
     this.events.push(event);
   }
 }
@@ -36,9 +36,9 @@ class FakeEventBus {
 describe("CreatePostCommandHandler", () => {
   test("should create post and return only id", async () => {
     const repository = new FakePostRepository();
+    const factory = new PostFactory();
     const notificationService = new FakeNotificationService();
     const eventBus = new FakeEventBus();
-    const factory = new PostFactory();
 
     const handler = new CreatePostCommandHandler(
       factory,
@@ -49,7 +49,7 @@ describe("CreatePostCommandHandler", () => {
 
     const command = new CreatePostCommand({
       authorId: "user-1",
-      content: "Hello CQS",
+      content: "Hello modular monolith",
     });
 
     const result = await handler.handle(command);
@@ -62,9 +62,9 @@ describe("CreatePostCommandHandler", () => {
 
   test("should throw domain error for invalid content", async () => {
     const repository = new FakePostRepository();
+    const factory = new PostFactory();
     const notificationService = new FakeNotificationService();
     const eventBus = new FakeEventBus();
-    const factory = new PostFactory();
 
     const handler = new CreatePostCommandHandler(
       factory,

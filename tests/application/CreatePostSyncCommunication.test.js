@@ -1,6 +1,6 @@
-const CreatePostCommand = require("../../src/application/commands/CreatePostCommand");
-const CreatePostCommandHandler = require("../../src/application/command-handlers/CreatePostCommandHandler");
-const PostFactory = require("../../src/domain/factories/PostFactory");
+const CreatePostCommand = require("../../src/modules/core/application/commands/CreatePostCommand");
+const CreatePostCommandHandler = require("../../src/modules/core/application/command-handlers/CreatePostCommandHandler");
+const PostFactory = require("../../src/modules/core/domain/factories/PostFactory");
 
 class FakeRepository {
   constructor() {
@@ -22,6 +22,10 @@ class FakeNotificationService {
   }
 }
 
+class FakeEventBus {
+  publish() {}
+}
+
 describe("Sync communication", () => {
   test("handler sends notification synchronously", async () => {
     const repository = new FakeRepository();
@@ -31,7 +35,7 @@ describe("Sync communication", () => {
       new PostFactory(),
       repository,
       notificationService,
-      { publish: async () => {} }
+      new FakeEventBus()
     );
 
     await handler.handle(
