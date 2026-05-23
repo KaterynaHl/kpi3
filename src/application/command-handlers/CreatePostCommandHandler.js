@@ -4,11 +4,11 @@ const PostCreatedEvent = require(
   
   class CreatePostCommandHandler {
     constructor(
-      postFactory,
-      postRepository,
-      notificationService,
-      eventBus
-    ) {
+        postFactory,
+        postRepository,
+        notificationService,
+        eventBus
+      ) {
       this.postFactory = postFactory;
       this.postRepository = postRepository;
       this.notificationService = notificationService;
