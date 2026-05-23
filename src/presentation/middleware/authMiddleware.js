@@ -1,4 +1,4 @@
-const { tokenService } = require("../../container");
+const { tokenService } = require("../../../../container");
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
