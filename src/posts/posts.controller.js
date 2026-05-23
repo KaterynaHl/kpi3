@@ -14,6 +14,8 @@ const createPost = (req, res) => {
     title,
     content,
     authorId: req.user.id,
+    likes: 0,
+    dislikes: 0,
   };
 
   posts.push(post);
@@ -55,9 +57,25 @@ const deletePost = (req, res) => {
   res.status(204).send();
 };
 
-module.exports = {
-  createPost,
-  getPosts,
-  getPostById,
-  deletePost,
-};
+const likePost = (req, res) => {
+    const post = posts.find(
+      (p) => p.id === Number(req.params.id)
+    );
+  
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found",
+      });
+    }
+  
+    post.likes++;
+    res.json(post);
+  };
+
+  module.exports = {
+    createPost,
+    getPosts,
+    getPostById,
+    deletePost,
+    likePost,
+  };

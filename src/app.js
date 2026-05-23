@@ -43,3 +43,9 @@ const {
     authMiddleware,
     createComment
   );
+
+  app.post(
+    "/posts/:id/like",
+    authMiddleware,
+    likePost
+  );
