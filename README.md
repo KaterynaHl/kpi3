@@ -1,4 +1,4 @@
-# Microblog Lab 1 — CRUD “зроби як вмієш”
+# Microblog
 
 RESTful API для мікроблогінгу. Система дозволяє реєструватися, входити в акаунт, працювати з профілем, створювати/читати/оновлювати/видаляти пости й коментарі, шукати користувачів і пости за тегами, а також ставити лайки/дизлайки постам.
 
@@ -116,16 +116,97 @@ curl -X POST http://localhost:3000/posts \
 
 ```txt
 src/
-  app.js
-  server.js
+├── application/
+│   ├── dto/
+│   │   ├── AddCommentDTO.js
+│   │   ├── CreatePostDTO.js
+│   │   ├── LoginUserDTO.js
+│   │   └── RegisterUserDTO.js
+│   │
+│   └── use-cases/
+│       ├── AddCommentUseCase.js
+│       ├── CreatePostUseCase.js
+│       ├── GetPostsUseCase.js
+│       ├── LikePostUseCase.js
+│       ├── LoginUserUseCase.js
+│       └── RegisterUserUseCase.js
+│
+├── domain/
+│   ├── entities/
+│   │   ├── Comment.js
+│   │   ├── Post.js
+│   │   └── User.js
+│   │
+│   ├── errors/
+│   │   ├── DomainError.js
+│   │   └── NotFoundError.js
+│   │
+│   ├── factories/
+│   │   ├── PostFactory.js
+│   │   └── UserFactory.js
+│   │
+│   ├── repositories/
+│   │   ├── PostRepository.js
+│   │   └── UserRepository.js
+│   │
+│   └── value-objects/
+│       ├── CommentContent.js
+│       ├── Email.js
+│       ├── PostContent.js
+│       └── Username.js
+│
+├── infrastructure/
+│   ├── database/
+│   │   └── store.js
+│   │
+│   ├── repositories/
+│   │   ├── InMemoryPostRepository.js
+│   │   └── InMemoryUserRepository.js
+│   │
+│   ├── PasswordHasher.js
+│   └── TokenService.js
+│
+├── presentation/
+│   ├── controllers/
+│   │   ├── AuthController.js
+│   │   └── PostController.js
+│   │
+│   ├── middleware/
+│   │   ├── authMiddleware.js
+│   │   └── errorMiddleware.js
+│   │
+│   └── routes/
+│       ├── authRoutes.js
+│       └── postRoutes.js
+│
+├── app.js
+├── container.js
+└── server.js
+
 docs/
-  use-cases.md
-  self-analysis.md
+├── adr/
+│   └── 001-rich-domain-model.md
+│
+├── analysis/
+│   └── lab2.md
+│
+├── self-analysis.md
+└── use-cases.md
+
 tests/
-  validators.test.js
-  api.test.js
+├── application/
+│   └── CreatePostUseCase.test.js
+│
+├── domain/
+│   ├── post.test.js
+│   └── value-objects.test.js
+│
+└── api.test.js
+
 README.md
 package.json
+package-lock.json
+.gitignore
 ```
 
 ## Що реалізовано для лабораторної
