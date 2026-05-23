@@ -1,7 +1,12 @@
 class LoginUserCommand {
-    constructor({ email, password }) {
+    constructor({
+      email,
+      password,
+    }) {
       this.email = email;
       this.password = password;
+  
+      Object.freeze(this);
     }
   }
   

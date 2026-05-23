@@ -1,12 +1,8 @@
-class PostCreatedEvent {
+class CreatePostCommand {
     constructor({
-      postId,
       authorId,
       content,
     }) {
-      this.eventName = "PostCreated";
-  
-      this.postId = postId;
       this.authorId = authorId;
       this.content = content;
   
@@ -14,4 +10,4 @@ class PostCreatedEvent {
     }
   }
   
-  module.exports = PostCreatedEvent;
+  module.exports = CreatePostCommand;
